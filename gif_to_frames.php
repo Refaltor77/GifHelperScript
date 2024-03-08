@@ -10,25 +10,27 @@ if (!file_exists($outputsFolder)) {
 $files = scandir($inputsFolder);
 
 foreach ($files as $file) {
-    $inputFilePath = $inputsFolder . $file;
+    if ($file != "." && $file != "..") {
+        $inputFilePath = $inputsFolder . $file;
 
-    if (is_file($inputFilePath) && pathinfo($file, PATHINFO_EXTENSION) === 'gif') {
-        $outputGifFolder = $outputsFolder . 'gif_' . pathinfo($file, PATHINFO_FILENAME) . '/';
+        if (is_file($inputFilePath) && pathinfo($file, PATHINFO_EXTENSION) === 'gif') {
+            $outputGifFolder = $outputsFolder . 'gif_' . pathinfo($file, PATHINFO_FILENAME) . '/';
 
-        if (!file_exists($outputGifFolder)) {
-            mkdir($outputGifFolder, 0777, true);
+            if (!file_exists($outputGifFolder)) {
+                mkdir($outputGifFolder, 0777, true);
+            }
+
+            $gif = new Imagick($inputFilePath);
+
+            foreach ($gif as $frame) {
+                $frame->setImageFormat('png');
+                $outputFilePath = $outputGifFolder . $frame->getFilename() . '.png';
+                $frame->writeImage($outputFilePath);
+            }
+
+            $gif->clear();
+            $gif->destroy();
         }
-
-        $gif = new Imagick($inputFilePath);
-
-        foreach ($gif as $frame) {
-            $frame->setImageFormat('png');
-            $outputFilePath = $outputGifFolder . $frame->getFilename() . '.png';
-            $frame->writeImage($outputFilePath);
-        }
-
-        $gif->clear();
-        $gif->destroy();
     }
 }
 
