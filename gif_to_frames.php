@@ -8,7 +8,7 @@ if (!file_exists($outputsFolder)) {
     mkdir($outputsFolder, 0777, true);
 }
 
-$gifFile = $inputsFolder . "votre_animation.gif";
+$gifFile = $inputsFolder . "test.gif";
 $gif = imagecreatefromgif($gifFile);
 
 if ($gif === false) {
