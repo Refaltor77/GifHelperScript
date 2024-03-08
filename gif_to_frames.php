@@ -1,9 +1,9 @@
 <?php
 
-ini_set('memory_limit', '-1');
-
 $inputsFolder = "./inputs/";
 $outputsFolder = "./outputs/";
+
+ini_set('memory_limit', '256M');
 
 if (!file_exists($outputsFolder)) {
     mkdir($outputsFolder, 0777, true);
@@ -22,19 +22,26 @@ foreach ($files as $file) {
                 mkdir($outputGifFolder, 0777, true);
             }
 
-            $gif = new Imagick($inputFilePath);
+            try {
+                $gif = new Imagick($inputFilePath);
 
-            foreach ($gif as $frame) {
-                $frame->setImageFormat('png');
-                $outputFilePath = $outputGifFolder . $frame->getFilename() . '.png';
-                $frame->writeImage($outputFilePath);
+                foreach ($gif as $frame) {
+                    $frame->setImageFormat('png');
+                    $outputFilePath = $outputGifFolder . $frame->getFilename() . '.png';
+                    $frame->writeImage($outputFilePath);
+                    $frame->clear();
+                    $frame->destroy();
+                }
+
+                $gif->clear();
+                $gif->destroy();
+            } catch (ImagickException $e) {
+                echo "Erreur lors de la conversion du fichier $file : " . $e->getMessage() . "\n";
             }
-
-            $gif->clear();
-            $gif->destroy();
         }
     }
 }
 
 echo "Conversion des GIF en PNG terminée.";
+
 ?>
